@@ -1,5 +1,6 @@
 const express = require("express");
 const controller = require("../controllers/products");
+const upload = require("../middleware/multer");
 const router = express.Router();
 
 router.param("productId", async (req, res, next, productId) => {
@@ -14,10 +15,9 @@ router.param("productId", async (req, res, next, productId) => {
   }
 });
 
-router.get("/", controller.productList);
-router.post("/", controller.productCreate);
+router.get("", controller.productList);
 router.get("/:productId", controller.productDetail);
-router.put("/:productId", controller.productUpdate);
+router.put("/:productId", upload.single("image"), controller.productUpdate);
 router.delete("/:productId", controller.productDelete);
 
 module.exports = router;

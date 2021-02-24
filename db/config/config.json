@@ -1,10 +1,11 @@
 {
   "development": {
     "username": "postgres",
-    "password": "darthhamza",
-    "database": "mk_db",
+    "password": "S@keena",
+    "database": "productshop_db",
     "host": "127.0.0.1",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "logging":false
   },
   "test": {
     "username": "root",

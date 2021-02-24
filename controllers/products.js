@@ -1,6 +1,6 @@
-const { Product } = require("../db/models");
+const { Product, Shop } = require("../db/models");
 
-const fetchProduct = async (productId, next) => {
+exports.fetchProduct = async (productId, next) => {
   try {
     const productFound = await Product.findByPk(productId);
     if (productFound) return productFound;
@@ -13,30 +13,38 @@ const fetchProduct = async (productId, next) => {
 exports.productList = async (req, res, next) => {
   console.log(req.body);
   try {
-    const products = await Product.findAll({ attributes: req.body });
+    const products = await Product.findAll({
+      attributes:{ exclude: ["shopId", "createdAt", "updatedAt"] },
+      include: {model: Shop,
+      as: "shop",
+      attributes: ["id","name"],}
+      });
     res.status(200).json(products);
   } catch (error) {
     next(error);
   }
 };
 
-exports.productCreate = async (req, res, next) => {
-  try {
-    const newProduct = await Product.create(req.body);
-    res.status(201).json(newProduct);
-  } catch (error) {
-    next(error);
-  }
-};
 
 exports.productDetail = async (req, res, next) => {
   res.status(200).json(req.product);
 };
 
 exports.productUpdate = async (req, res, next) => {
-  await req.product.update(req.body);
-  res.status(200).json(req.product);
+  try {
+    if (req.file) {
+      req.body.image = `http://${req.get("host")}/media/${req.file.filename}`;
+    }
+    await req.product.update(req.body);
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
 };
+//   req.body.image = `http://${req.get("host")}/media/${req.file.filename}`;
+//   await req.product.update(req.body);
+//   res.status(200).json(req.product);
+// };
 
 exports.productDelete = async (req, res, next) => {
   await req.product.destroy();
