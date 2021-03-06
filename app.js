@@ -5,7 +5,9 @@ const passport = require("passport");
 const productRoutes = require("./routes/products");
 const shopRoutes = require("./routes/shops");
 const userRoutes = require("./routes/users");
+const orderRoute = require("./routes/orders");
 const {localStrategy} = require("./middleware/passport");
+const {jwtStrategy} = require("./middleware/passport");
 const path = require("path");
 const app = express();
 
@@ -16,6 +18,7 @@ app.use(cors());
 //Passport
 app.use(passport.initialize());
 passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 console.log("directoryname", path.join(__dirname, "media"));
 
@@ -23,6 +26,7 @@ console.log("directoryname", path.join(__dirname, "media"));
 app.use("/products", productRoutes);
 app.use("/shops", shopRoutes);
 app.use(userRoutes);
+app.use(orderRoute);
 app.use("/media", express.static(path.join(__dirname, "media")));
 
 //Not Found

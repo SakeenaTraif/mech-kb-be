@@ -29,6 +29,7 @@ exports.shopCreate = async (req, res, next) => {
   try {
     if (req.file)
     req.body.image = `http://${req.get("host")}/media/${req.file.filename}`;
+    req.body.userId = req.user.id;
     const newShop = await Shop.create(req.body);
     res.status(201).json(newShop);
   } catch (error) {
@@ -63,12 +64,19 @@ exports.shopDelete = async (req, res, next) => {
 
 exports.productCreate = async (req, res, next) => {
   try {
+    if(req.user.id === req.shop.userId){
     //From route params
     req.body.shopId = req.shop.id;
     if (req.file)
     req.body.image = `http://${req.get("host")}/media/${req.file.filename}`;
     const newProduct = await Product.create(req.body);
     res.status(201).json(newProduct);
+    } else {
+      next({
+        status: 401,
+        message: "Don't you dare create a product in this shop",
+      });
+    }
   } catch (error) {
     next(error);
   }

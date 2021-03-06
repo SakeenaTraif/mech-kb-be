@@ -1,4 +1,5 @@
 const express = require("express");
+const passport = require("passport");
 const controller = require("../controllers/shops");
 const upload = require("../middleware/multer");
 const router = express.Router();
@@ -16,11 +17,19 @@ router.param("shopId", async (req, res, next, shopId) => {
 });
 
 router.get("", controller.shopList);
-router.post("/", upload.single("image"), controller.shopCreate);
+router.post("/",
+passport.authenticate("jwt", { session: false }),
+ upload.single("image"), 
+ controller.shopCreate);
+
 router.get("/:shopId", controller.shopDetail);
 router.put("/:shopId", upload.single("image"), controller.shopUpdate);
 router.delete("/:shopId", controller.shopDelete);
-router.post("/:shopId/products", upload.single("image"), controller.productCreate);
+
+router.post("/:shopId/products",
+passport.authenticate("jwt", { session: false }),
+upload.single("image"), 
+controller.productCreate);
 
 
 module.exports = router;
